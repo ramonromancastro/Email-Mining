@@ -1,0 +1,20 @@
+.navbar-brand {
+  padding: 0px; /* firefox bug fix */
+}
+.navbar-brand>img {
+  height: 100%;
+  padding: 10px; /* firefox bug fix */
+  width: auto;
+}
+
+.navbar-brand .name{
+	padding-top: 15px;
+}
+
+th{
+	text-transform: uppercase;
+}
+
+*{
+    font-family: 'Lato', sans-serif;
+}
