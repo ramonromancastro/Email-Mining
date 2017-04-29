@@ -9,11 +9,13 @@ function mysql_active_alerts($mysqli){
 			' )'.
 			' GROUP BY source, service'.
 			' ORDER BY timestamp DESC';
-	return $mysqli->query($sql);
+	if ($stmt = $mysqli->prepare($sql)) $stmt->execute();
+	return $stmt;
 }
 
 function mysql_source_service_error($mysqli,$source,$service){
-	$sql = "SELECT CONCAT(source,'.',service) as valor, COUNT(*) as total".
+	global $config;
+	$sql = "SELECT CASE error WHEN 1 THEN '".$config['general']['ok']."' ELSE '".$config['general']['error']."' END as valor, COUNT(*) as total".
 			" FROM emails".
 			" WHERE source=? AND service=?".
 			" GROUP BY source, service, error";
@@ -25,17 +27,34 @@ function mysql_source_service_error($mysqli,$source,$service){
 }
 
 function mysql_report_top_source_alert($mysqli,$top=0){
+	$sql = 'SELECT source, COUNT(*) as total'.
+			' FROM emails'.
+			' WHERE error AND NOT EXISTS ('.
+				' SELECT * FROM emails as Oks'.
+				' WHERE Oks.source = emails.source AND Oks.service = emails.service AND NOT error AND Oks.timestamp > emails.timestamp'.
+			' )'.
+			' GROUP BY source'.
+			' ORDER BY total DESC';
 	if ($top)
-		return $mysqli->query("SELECT source,COUNT(*) as total FROM emails WHERE error GROUP BY source ORDER BY total DESC LIMIT 0,$top");
-	else
-		return $mysqli->query("SELECT source,COUNT(*) as total FROM emails WHERE error GROUP BY source ORDER BY total DESC");
+		$sql .= " LIMIT 0,$top";
+		// $sql = "SELECT source,COUNT(*) as total FROM emails WHERE error GROUP BY source ORDER BY total DESC LIMIT 0,$top";
+	// else
+		// $sql = "SELECT source,COUNT(*) as total FROM emails WHERE error GROUP BY source ORDER BY total DESC";
+
+
+	
+	if ($stmt = $mysqli->prepare($sql)) $stmt->execute();
+	return $stmt;
 }
 
 function mysql_report_top_service_alert($mysqli,$top=0){
 	if ($top)
-		return $mysqli->query("SELECT CONCAT(source,'.',service) as service,COUNT(*) as total FROM emails WHERE error GROUP BY source, service ORDER BY total DESC LIMIT 0,$top");
+		$sql = "SELECT CONCAT(source,'.',service) as service,COUNT(*) as total FROM emails WHERE error GROUP BY source, service ORDER BY total DESC LIMIT 0,$top";
 	else
-		return $mysqli->query("SELECT CONCAT(source,'.',service) as service,COUNT(*) as total FROM emails WHERE error GROUP BY source, service ORDER BY total DESC");
+		$sql = "SELECT CONCAT(source,'.',service) as service,COUNT(*) as total FROM emails WHERE error GROUP BY source, service ORDER BY total DESC";
+	
+	if ($stmt = $mysqli->prepare($sql)) $stmt->execute();
+	return $stmt;
 }
 
 function mysql_truncate_events($mysqli){	
@@ -72,23 +91,80 @@ function mysql_insert_event($mysqli, $source, $service, $status, $timestamp, $er
 	}
 }
 
-function pie_chart_from_mysql_stmt($result, $title='Pie Chart', $x=320, $y=200, $class=''){
+function graph_2dring_from_stmt($stmt,$title='2D Ring Chart',$class=''){
+	global $config;
+	
+	include_once("pchart/class/pData.class.php");
+	include_once("pchart/class/pDraw.class.php");
+	include_once("pchart/class/pImage.class.php");
+	include_once("pchart/class/pPie.class.php"); 
+
+	$myData = new pData();
+	
+	$stmt->store_result();
+	if( $stmt->num_rows() > 0){
+		$stmt->bind_result($col1, $col2);
+		while( $stmt->fetch() ){
+			$labels[] = $col1;
+			$values[] = $col2;
+		}
+		$myData->addPoints($labels,'labels');
+		$myData->addPoints($values,'values');
+	}
+	$myData->setAbscissa("labels"); 
+	$stmt->free_result();
+	
+	$myPicture = new pImage(640,480,$myData);
+	$myPicture->drawRectangle(0,0,639,479,array("R"=>0,"G"=>0,"B"=>0)); 
+	$myPicture->drawGradientArea(0,0,639,40,DIRECTION_VERTICAL,array("StartR"=>0,"StartG"=>0,"StartB"=>0,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>100)); 
+	$myPicture->setFontProperties(array("FontName"=>"pchart/fonts/verdana.ttf","FontSize"=>14)); 
+	$myPicture->drawText(10,30,$title,array("R"=>255,"G"=>255,"B"=>255)); 
+	$myPicture->setFontProperties(array("FontName"=>"pchart/fonts/verdana.ttf","FontSize"=>10));
+	if (isset($values)) {
+		$PieChart = new pPie($myPicture,$myData);
+		$PieChart->draw2DRing(320,240,array("OuterRadius"=>120,"InnerRadius"=>60,"WriteValues"=>TRUE,"ValuePosition"=>PIE_VALUE_INSIDE,"DrawLabels"=>TRUE,"LabelStacked"=>TRUE,"Border"=>TRUE));
+	}
+	else
+		$myPicture->drawText(320,240,"No hay información disponible",array("Align"=>TEXT_ALIGN_MIDDLEMIDDLE));
+
+	// $myPicture = new pImage(512,320,$myData);	
+	// $myPicture->drawRectangle(0,0,511,319,array("R"=>0,"G"=>0,"B"=>0)); 
+	// $myPicture->drawGradientArea(0,0,511,40,DIRECTION_VERTICAL,array("StartR"=>0,"StartG"=>0,"StartB"=>0,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>100)); 
+	// $myPicture->setFontProperties(array("FontName"=>"pchart/fonts/Forgotte.ttf","FontSize"=>14)); 
+	// $myPicture->drawText(10,23,$title,array("R"=>255,"G"=>255,"B"=>255)); 
+	// $myPicture->setFontProperties(array("FontName"=>"pchart/fonts/Forgotte.ttf","FontSize"=>11));
+	// $PieChart = new pPie($myPicture,$myData);
+	// $PieChart->draw2DRing(256,160,array("WriteValues"=>TRUE,"ValuePosition"=>PIE_VALUE_INSIDE,"DrawLabels"=>TRUE,"LabelStacked"=>TRUE,"Border"=>TRUE));
+	$myPicture->setShadow(FALSE);
+	//$PieChart->drawPieLegend(20,60,array("Alpha"=>20));
+	$filename = uniqid(rand(), true);
+	$myPicture->Render($config['graph']['path']."/$filename.png");
+	echo "<img class='$class' alt='$title' src='".$config['graph']['path']."/$filename.png'/>";
+}
+
+function pie_chart_from_mysql_stmt($stmt, $title='Pie Chart', $x=320, $y=200, $class=''){
+	global $config;
+	
 	$chart = new PieChart( $x, $y );
 	$dataSet = new XYDataSet();
-	if( $result->num_rows() > 0){
-		$result->bind_result($col1, $col2);
-		while( $result->fetch() ){
+	$stmt->store_result();
+	if( $stmt->num_rows() > 0){
+		$stmt->bind_result($col1, $col2);
+		while( $stmt->fetch() ){
 			$dataSet->addPoint(new Point($col1 . " ($col2)", $col2));
 		}
 		$chart->setDataSet($dataSet);
 		$chart->setTitle($title);
 		$filename = uniqid(rand(), true);
-		$chart->render("generated/$filename.png");
-		echo "<img class='$class' alt='$title' src='generated/$filename.png'/>";
+		$chart->render($config['graph']['path']."/$filename.png");
+		echo "<img class='$class' alt='$title' src='".$config['graph']['path']."/$filename.png'/>";
 	}
+	$stmt->free_result();
 }
 
 function pie_chart_from_mysql_result($result, $title='Pie Chart', $x=320, $y=200, $class=''){
+	global $config;
+	
 	$chart = new PieChart( $x, $y );
 	$dataSet = new XYDataSet();
 	if( $result->num_rows > 0){
@@ -98,11 +174,36 @@ function pie_chart_from_mysql_result($result, $title='Pie Chart', $x=320, $y=200
 		$chart->setDataSet($dataSet);
 		$chart->setTitle($title);
 		$filename = uniqid(rand(), true);
-		$chart->render("generated/$filename.png");
-		echo "<img class='$class' alt='$title' src='generated/$filename.png'/>";
+		$chart->render($config['graph']['path']."/$filename.png");
+		echo "<img class='$class' alt='$title' src='".$config['graph']['path']."/$filename.png'/>";
 	}
 }
 
+function html_table_from_stmt($stmt,$class){
+	$variables = array();
+	$data = array();
+	
+	echo "<table class='$class'>";
+	$fields = $stmt->result_metadata();
+	echo "<tr>";
+	while ($finfo = $fields->fetch_field()) {
+		echo "<th>".$finfo->name."</th>";
+		$variables[] = &$data[$finfo->name]; // pass by reference
+	}
+	echo "</tr>";
+	$fields->close();
+	
+	call_user_func_array(array($stmt, 'bind_result'), $variables);
+	
+	while($stmt->fetch()) {
+		echo "<tr>";
+		foreach ($variables as $value ) {
+			echo "<td>$value</td>";
+		}
+		echo "</tr>";
+	}
+	echo "</table>";
+}
 
 function html_table_from_mysql_result($result,$class){
 	echo "<table class='$class'>";

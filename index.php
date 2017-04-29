@@ -26,15 +26,27 @@ collect_mail();
 
 $realpath=dirname(realpath(__FILE__));
 $page = 'overview.php';
-if ($_GET['p'] == basename(__FILE__)){
-	$page = 'overview.php';
-}
-elseif(isset($_GET['p']) && !empty($_GET['p'])){
-	$page = $_GET['p'];
-	$page_path = realpath("$realpath/$page");
-	if (empty($page_path) || strpos($page_path,$realpath) === false || !is_file($page_path)){
-		$page = '404.php';
+if(isset($_GET['p']) && !empty($_GET['p'])){
+	if ($_GET['p'] == basename(__FILE__)){
+		$page = 'overview.php';
 	}
+	else{
+		$page = $_GET['p'];
+		$page_path = realpath("$realpath/$page");
+		if (empty($page_path) || strpos($page_path,$realpath) === false || !is_file($page_path)){
+			$page = '404.php';
+		}
+	}
+}
+
+/******************************************************/
+/* ELIMINAMOS LOS GRAFICOS ANTERIORES */
+/******************************************************/
+
+$files = glob($config['graph']['path'].'/*'); // get all file names
+foreach($files as $file){ // iterate files
+  if(is_file($file))
+    unlink($file); // delete file
 }
 
 /******************************************************/
