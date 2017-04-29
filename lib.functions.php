@@ -1,13 +1,31 @@
 <?php
 
-function mysql_active_alerts($mysqli){	
-	$sql = 'SELECT source, service, FROM_UNIXTIME(MAX(timestamp)) as timestamp'.
+function mysql_active_alerts_by_source($mysqli){	
+	$sql = 'SELECT source, COUNT(*) as total'.
+			' FROM (SELECT source, service, FROM_UNIXTIME(MAX(timestamp)) as timestamp'.
 			' FROM emails'.
 			' WHERE error AND NOT EXISTS ('.
 				' SELECT * FROM emails as Oks'.
-				' WHERE Oks.source = emails.source AND Oks.service = emails.service AND NOT error AND Oks.timestamp > emails.timestamp'.
+				' WHERE Oks.source_uid = emails.source_uid AND Oks.service_uid = emails.service_uid AND NOT error AND Oks.timestamp > emails.timestamp'.
 			' )'.
-			' GROUP BY source, service'.
+			' GROUP BY source, service) as TempTable'.
+			' GROUP BY source'.
+			' ORDER BY total DESC';
+	if ($stmt = $mysqli->prepare($sql)) $stmt->execute();
+	return $stmt;
+}
+
+function mysql_active_alerts($mysqli){	
+	$sql = 'SELECT source, service, status, FROM_UNIXTIME(timestamp) as timestamp'.
+			' FROM emails'.
+			' WHERE error AND NOT EXISTS ('.
+				' SELECT * FROM emails as Oks'.
+				' WHERE Oks.source_uid = emails.source_uid AND Oks.service_uid = emails.service_uid AND NOT error AND Oks.timestamp > emails.timestamp'.
+			' ) AND '.
+			' timestamp >= ('.
+				' SELECT MAX(timestamp) FROM emails as Oks'.
+				' WHERE Oks.source_uid = emails.source_uid AND Oks.service_uid = emails.service_uid AND error'.
+			' )'.
 			' ORDER BY timestamp DESC';
 	if ($stmt = $mysqli->prepare($sql)) $stmt->execute();
 	return $stmt;
@@ -27,31 +45,18 @@ function mysql_source_service_error($mysqli,$source,$service){
 }
 
 function mysql_report_top_source_alert($mysqli,$top=0){
-	$sql = 'SELECT source, COUNT(*) as total'.
-			' FROM emails'.
-			' WHERE error AND NOT EXISTS ('.
-				' SELECT * FROM emails as Oks'.
-				' WHERE Oks.source = emails.source AND Oks.service = emails.service AND NOT error AND Oks.timestamp > emails.timestamp'.
-			' )'.
-			' GROUP BY source'.
-			' ORDER BY total DESC';
+	$sql = "SELECT source,COUNT(*) as total FROM emails WHERE error GROUP BY source ORDER BY total DESC";
 	if ($top)
 		$sql .= " LIMIT 0,$top";
-		// $sql = "SELECT source,COUNT(*) as total FROM emails WHERE error GROUP BY source ORDER BY total DESC LIMIT 0,$top";
-	// else
-		// $sql = "SELECT source,COUNT(*) as total FROM emails WHERE error GROUP BY source ORDER BY total DESC";
-
-
 	
 	if ($stmt = $mysqli->prepare($sql)) $stmt->execute();
 	return $stmt;
 }
 
 function mysql_report_top_service_alert($mysqli,$top=0){
+	$sql = "SELECT CONCAT(source,' / ',service) as service,COUNT(*) as total FROM emails WHERE error GROUP BY source, service ORDER BY total DESC";
 	if ($top)
-		$sql = "SELECT CONCAT(source,'.',service) as service,COUNT(*) as total FROM emails WHERE error GROUP BY source, service ORDER BY total DESC LIMIT 0,$top";
-	else
-		$sql = "SELECT CONCAT(source,'.',service) as service,COUNT(*) as total FROM emails WHERE error GROUP BY source, service ORDER BY total DESC";
+		$sql .= " LIMIT 0,$top";
 	
 	if ($stmt = $mysqli->prepare($sql)) $stmt->execute();
 	return $stmt;
@@ -105,7 +110,7 @@ function graph_2dring_from_stmt($stmt,$title='2D Ring Chart',$class=''){
 	if( $stmt->num_rows() > 0){
 		$stmt->bind_result($col1, $col2);
 		while( $stmt->fetch() ){
-			$labels[] = $col1;
+			$labels[] = "$col1 ($col2)";
 			$values[] = $col2;
 		}
 		$myData->addPoints($labels,'labels');
@@ -256,6 +261,7 @@ function collect_mail(){
 					break;
 				}
 			}
+			if (!$found) $config['debug']['emails'][] = $overview[0]->date." :: $title";
 		}
 	} 
 	imap_close($inbox);
