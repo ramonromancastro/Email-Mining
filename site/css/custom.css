@@ -48,3 +48,24 @@ th{
 	font-weight: bold;
 	font-size: 200%;
 }
+
+.email{
+	border: 1px solid #e0e0e0;
+}
+
+.email p{
+	margin: 0;
+}
+
+.email-meta{
+	background-color: #f4f4f4;
+	padding: 1em;
+}
+
+.email-meta-section{
+	font-weight: bold;
+}
+
+.email-body{
+	padding: 1em;
+}

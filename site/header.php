@@ -1,4 +1,6 @@
 <?php
+global $app;
+
 include 'modules/libchart/libchart/classes/libchart.php';
 include 'modules/pchart/class/pData.class.php';
 include 'modules/pchart/class/pDraw.class.php';
@@ -8,20 +10,11 @@ include 'modules/pchart/class/pPie.class.php';
 include 'functions.php';
 
 /******************************************************/
-/* ELIMINAMOS LOS GRAFICOS ANTERIORES */
-/******************************************************/
-
-// $files = glob($config['graph']['path'].'/*'); // get all file names
-// foreach($files as $file){ // iterate files
-  // if(is_file($file))
-    // unlink($file); // delete file
-// }
-
-/******************************************************/
 /* RECOLECTAMOS LOS EMAILS */
 /******************************************************/
 
-collect_mail();
+if ($app['general']['autosync']) collect_mail();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +27,8 @@ collect_mail();
     <meta name="author" content="Ramon Roman Castro <ramonromancastro@gmail.com>">
 	<link rel="icon" href="favicon.ico">
 	<title>Email Mining</title>
-	<meta http-equiv="refresh" content="<?php echo $config['general']['refresh']; ?>">
+	<?php echo (skel_is_home() && isset($app['general']['refresh']))?"<meta http-equiv='refresh' content='".$app['general']['refresh']."'>":""; ?>
+	
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- Latest compiled and minified CSS -->
@@ -84,20 +78,10 @@ collect_mail();
           <ul class="nav nav-sidebar">
             <li><a href="?">Vistazo</a></li>
             <li><a href="?p=history.php">Histórico</a></li>
-            <li><a href="#">Analytics</a></li>
-            <li><a href="#">Export</a></li>
           </ul>
           <ul class="nav nav-sidebar">
-            <li><a href="">Nav item</a></li>
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-            <li><a href="">More navigation</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
+			<li><a href='#'><span class="label label-<?php echo ($app['general']['autosync'])?'success':'danger';?>">Sincronización automática</span></a></li>
+            <li><a href="?p=sync.php">Sincronizar ahora!</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

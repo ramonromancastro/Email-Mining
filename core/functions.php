@@ -1,6 +1,9 @@
 <?php
-$mysqli = null;
-$runtime = null;
+function skel_is_home(){
+	global $runtime;
+	
+	return ($runtime['page'] == 'home.php');
+}
 
 function skel_db_open(){
 	global $config,$mysqli;
@@ -31,7 +34,6 @@ function skel_calculate_page(){
 			}
 		}
 	}
-	print_r($runtime);
 }
 
 function skel_load_content(){
