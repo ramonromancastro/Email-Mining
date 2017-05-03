@@ -7,13 +7,12 @@ include 'modules/pchart/class/pDraw.class.php';
 include 'modules/pchart/class/pImage.class.php';
 include 'modules/pchart/class/pPie.class.php';
 
-include 'functions.php';
+include 'inc.functions.php';
+include 'inc.mysql.php';
+include 'inc.init.php';
 
-/******************************************************/
-/* RECOLECTAMOS LOS EMAILS */
-/******************************************************/
-
-if ($app['general']['autosync']) collect_mail();
+/* SINCRONIZACION AUTOMATICA DEL CORREO */
+if (skel_is_home() && $app['general']['autosync']) collect_mail();
 
 ?>
 <!DOCTYPE html>
@@ -35,12 +34,18 @@ if ($app['general']['autosync']) collect_mail();
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<!-- Optional theme -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 	
 	<!-- Custom styles for this template -->
     <link href="site/css/dashboard.css" rel="stylesheet">
 	<link href="site/css/custom.css" rel="stylesheet">
+	
+	<!-- Font Awesome -->
+	<script src="https://use.fontawesome.com/e84de6e0f7.js"></script>
+
 	
 	<!-- Load fonts -->
 	<link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
@@ -57,31 +62,39 @@ if ($app['general']['autosync']) collect_mail();
           </button>
           <a class="navbar-brand" href="index.php"><img class="pull-left" title="[Logo]" alt="[Logo]" src="site/images/logo.png"/><span class="pull-left name">Email Mining</span></a>
         </div>
-        <!--
 		<div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
+		    <p class='navbar-text'>
+		  <?php
+			echo "<span class='label label-".(($app['general']['autosync'])?'success':'default')."'><i title='Auto-sync' class='fa fa-refresh fa-fw' aria-hidden='true'></i></span>&nbsp;";
+            echo "<span class='label label-".(($app['general']['autodelete'])?'success':'default')."'><i title='Auto-delete' class='fa fa-trash fa-fw' aria-hidden='true'></i></span>&nbsp;";
+			echo "<span class='label label-".(($app['general']['debug'])?'success':'default')."'><i title='Debug mode' class='fa fa-bug fa-fw' aria-hidden='true'></i></span>&nbsp;";
+          ?>
+			</p><ul class="nav navbar-nav navbar-right">
             <li><a href="#">Dashboard</a></li>
             <li><a href="#">Settings</a></li>
             <li><a href="#">Profile</a></li>
             <li><a href="#">Help</a></li>
           </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
+		  <form class="navbar-form navbar-right">
+		    <input id="p" name="p" type="hidden" value="search.php">
+            <input id="pattern" name="pattern" type="text" class="form-control" placeholder="Buscar...">
           </form>
         </div>
-		-->
       </div>
     </nav>
 	<div class="container-fluid">
       <div class="row">
-        <div class="col-sm-3 col-md-2 sidebar">
+        <!--<div class="col-sm-3 col-md-2 sidebar">-->
+		<div class="sidebar">
           <ul class="nav nav-sidebar">
-            <li><a href="?">Vistazo</a></li>
-            <li><a href="?p=history.php">Histórico</a></li>
+            <li><a href="?"><i title="Dashboard" class='fa fa-tachometer fa-2x' aria-hidden='true'></i></a></li>
+            <li><a href="?p=history.php"><i title="Histórico" class='fa fa-history fa-2x' aria-hidden='true'></i></a></li>
+			<li><a href="?p=inbox.php"><i title="Bandeja de entrada" class='fa fa-envelope-o fa-2x' aria-hidden='true'></i></a></li>
+            <li><a href="?p=sync.php"><i title="Sincronizar ahora!" class='fa fa-refresh fa-2x' aria-hidden='true'></i></a></li>
           </ul>
-          <ul class="nav nav-sidebar">
-			<li><a href='#'><span class="label label-<?php echo ($app['general']['autosync'])?'success':'danger';?>">Sincronización automática</span></a></li>
-            <li><a href="?p=sync.php">Sincronizar ahora!</a></li>
-          </ul>
+          <div class="nav nav-sidebar">
+			<!--<p class="navbar-text small alert alert-<?php echo ($app['general']['autosync'])?'success':'warning';?>">Sincronización automática <?php echo ($app['general']['autosync'])?'':'des';?>habilitada.<?php echo (!$app['general']['autosync'])?" Pulsa <a href='?p=sync.php' title='Sincronizar ahora!'>aquí</a> para sincronizar manualmente.":""; ?></p>-->
+          </div>
         </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+        <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
+		<div class="main">

@@ -1,4 +1,4 @@
-          <h1 class="page-header">Histórico</h1>
+          <h1 class="page-header"><i class='fa fa-history fa-fw' aria-hidden='true' style='float:right;'></i>Histórico</h1>
 		  
           <div class="row placeholders">
             <div class="col-xs-6 col-sm-6 placeholder">

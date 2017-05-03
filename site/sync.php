@@ -1,17 +1,22 @@
-			<h1 class="page-header">Sincronizar ahora!</h1>
-			<h2 class="sub-header">Resultados de la sincronización</h2>
 <?php
-	collect_mail();
-	
-	echo (isset($app['runtime']['emails']))?"<p class='alert alert-success'><strong>".$app['runtime']['emails']."</strong> correo(s) analizado(s) en la última sincronización.</p>":"<p class='alert alert-info'>No se han analizado correos en la última sincronización.</p>";
-	
-	if (isset($app['runtime']['unknown'])){
-		echo "<h3>Emails no procesados</h3>";
-		foreach($app['runtime']['unknown'] as $line){
-			echo "<p>$line</p>";
-		}
-	}
-	else{
-		echo "<p class='alert alert-success'>No existen correos sin minar en la última sincronización.</p>";
-	}
+collect_mail();
 ?>
+			<h1 class="page-header"><i class='fa fa-refresh fa-fw' aria-hidden='true' style='float:right;'></i>Sincronizar ahora!</h1>
+			<h2 class="sub-header">Resultados de la sincronización</h2>
+			<div class="row">
+				<div class="col-xs-4 col-sm-4">
+					<div class="alert alert-<?php echo ($app['runtime']['sync']['analyzed'])?"success":"info"; ?> text-center">
+						<?php echo "<span class='number'>".$app['runtime']['sync']['analyzed']."</span><span class='text'> correo(s) analizado(s)</span>"; ?>
+					</div>
+				</div>
+				<div class="col-xs-4 col-sm-4">
+					<div class="alert alert-<?php echo ($app['runtime']['sync']['included'])?"success":"info"; ?> text-center">
+						<?php echo "<span class='number'>".$app['runtime']['sync']['included']."</span><span class='text'> correo(s) añadidos(s)</span>"; ?>
+					</div>
+				</div>
+				<div class="col-xs-4 col-sm-4">
+					<div class="alert alert-<?php echo ($app['runtime']['sync']['excluded'])?"danger":"success"; ?> text-center">
+						<?php echo "<span class='number'>".$app['runtime']['sync']['excluded']."</span><span class='text'> correo(s) excluidos</span>"; ?>
+					</div>
+				</div>
+			</div>

@@ -1,6 +1,6 @@
-			<h1 class="page-header">Vistazo</h1>
+			<h1 class="page-header"><i class='fa fa-dashboard fa-fw' aria-hidden='true' style='float:right;'></i>Dashboard</h1>
 			<div class="row">
-				<div class="col-xs-3 col-sm-3">
+				<div class="col-xs-4 col-sm-4">
 <?php
 	$stmt = mysql_active_alerts($mysqli);
 	$stmt->store_result(); ?>
@@ -12,7 +12,7 @@
 	$stmt->close();
 ?>
 				</div>
-				<div class="col-xs-3 col-sm-3">
+				<div class="col-xs-4 col-sm-4">
 <?php
 	$stmt = mysql_active_alerts_by_source($mysqli);
 	$stmt->store_result(); ?>
@@ -27,14 +27,9 @@
 <?php
 	if ($app['general']['autosync']){
 ?>
-				<div class="col-xs-3 col-sm-3">
+				<div class="col-xs-4 col-sm-4">
 					<div class="alert alert-success text-center">
-						<?php echo (isset($app['runtime']['emails']))?"<span class='number'>".$app['runtime']['emails']."</span><span class='text'>correo(s) analizado(s) en la última sincronización</span>":"<span class='text'>No se han analizado correos en la última sincronización</span>"; ?>
-					</div>
-				</div>
-				<div class="col-xs-3 col-sm-3">
-					<div class="alert alert-<?php echo (isset($app['runtime']['unknown']))?"warning":"success"; ?> text-center">
-						<?php echo (isset($app['runtime']['unknown']))?"<span class='number'>".count($app['runtime']['unknown'])."</span><span class='text'>correo(s) no minado(s) en la última sincronización</span>":"<span class='text'>No existen correos sin minar en la última sincronización</span>"; ?>
+						<?php echo "<span class='number'>".$app['runtime']['sync']['analyzed']."</span><span class='text'> correo(s) analizado(s)</span>"; ?>
 					</div>
 				</div>
 <?php
@@ -86,14 +81,3 @@
 	$stmt->close();
 ?>
 			</div>
-			<h2 class="sub-header">Emails no procesados</h2>
-<?php
-	if (isset($app['runtime']['unknown'])){
-		foreach($app['runtime']['unknown'] as $line){
-			echo "<p>$line</p>";
-		}
-	}
-	else{
-		echo "No existen correos sin minar en la última sincronización";
-	}
-?>

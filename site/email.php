@@ -1,4 +1,4 @@
-			<h1 class="page-header">Correo electrónico</h1>
+			<h1 class="page-header"><i class='fa fa-envelope-o fa-fw' aria-hidden='true' style='float:right;'></i>Correo electrónico</h1>
 			<div class="row">
 				<div class="col-xs-12 col-sm-12">
 <?php
@@ -16,11 +16,11 @@
 		echo "<p><span class='email-meta-section'>Date:</span> ".$overview[0]->date."</p>";
 		echo "<p><span class='email-meta-section'>To:</span> ".htmlentities(imap_utf8($overview[0]->to))."</p>";
 		echo "</div>";
-		echo "<div class='email-body'><p>".nl2br($message)."</p></div>";
+		echo "<div class='email-body'><p>".imap_utf8(nl2br($message))."</p></div>";
 		echo "</div>";
 	}
 	else{
-		echo "<p>No se ha podido desargar el correo electrónico seleccionado.</p>";
+		echo "<p>No se ha podido descargar el correo electrónico seleccionado.</p>";
 	}
 	imap_close($inbox);
 ?>

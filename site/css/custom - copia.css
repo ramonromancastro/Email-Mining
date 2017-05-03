@@ -1,0 +1,71 @@
+.navbar-brand {
+  padding: 0px; /* firefox bug fix */
+}
+.navbar-brand>img {
+  height: 100%;
+  padding: 10px; /* firefox bug fix */
+  width: auto;
+}
+
+.navbar-brand .name{
+	padding-top: 15px;
+}
+
+th{
+	text-transform: uppercase;
+}
+
+*{
+    font-family: 'Lato', sans-serif;
+}
+
+/*
+@brand-success: #5cb85c;
+@brand-info:    #5bc0de;
+@brand-warning: #f0ad4e;
+*/
+
+.brand-success{
+	background-color: #5cb85c;
+	color: white;
+}
+
+.brand-danger{
+	background-color: #d9534f;
+	color: white;
+}
+
+.color-swatch {
+	width: 100px;
+	height: 100px;
+	margin: 0 5px;
+	padding: 5px;
+	border-radius: 3px;
+}
+
+.alert .number{
+	display: block;
+	font-weight: bold;
+	font-size: 200%;
+}
+
+.email{
+	border: 1px solid #e0e0e0;
+}
+
+.email p{
+	margin: 0;
+}
+
+.email-meta{
+	background-color: #f4f4f4;
+	padding: 1em;
+}
+
+.email-meta-section{
+	font-weight: bold;
+}
+
+.email-body{
+	padding: 1em;
+}
