@@ -3,14 +3,16 @@
 				<div class="col-xs-12 col-sm-12">
 <?php
 	$uid=$_GET['uid'];
-
-	$stmt = mysql_emails_acknowledge_email_affected($mysqli,$uid);
-	purge_inbox_acknowledge_from_stmt($stmt,'uid');
-
-	$stmt->close();
-	mysql_emails_acknowledge_email($mysqli,$uid);
+	if (!empty($uid)){
+		foreach ($uid as $value){
+			$stmt = mysql_emails_acknowledge_email_affected($mysqli,$value);
+			purge_inbox_acknowledge_from_stmt($stmt,'uid');
+			$stmt->close();
+			mysql_emails_acknowledge_email($mysqli,$value);
+			echo "<p>La alerta [$value] y sus descendientes se han marcado como solucionadas.</p>";
+		}
+	}
 ?>
-					<p>La alerta se ha marcado como solucionada.</p>
 					<p>Volver a la <a href="<?php echo $_SERVER['HTTP_REFERER']; ?>">página anterior<a>.</p>
 				</div>
 			</div>

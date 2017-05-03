@@ -24,7 +24,7 @@ if (skel_is_home() && $app['general']['autosync']) collect_mail();
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="Panel de control del Área de Sistemas del servicio de Tecnología y Sistemas de la Agencia Andaluza de Instituciones Culturales">
     <meta name="author" content="Ramon Roman Castro <ramonromancastro@gmail.com>">
-	<link rel="icon" href="favicon.ico">
+	<link rel="shortcut icon" href="favicon.ico" />
 	<title>Email Mining</title>
 	<?php echo (skel_is_home() && isset($app['general']['refresh']))?"<meta http-equiv='refresh' content='".$app['general']['refresh']."'>":""; ?>
 	
@@ -65,9 +65,9 @@ if (skel_is_home() && $app['general']['autosync']) collect_mail();
 		<div id="navbar" class="navbar-collapse collapse">
 		    <p class='navbar-text'>
 		  <?php
-			echo "<span class='label label-".(($app['general']['autosync'])?'success':'default')."'><i title='Auto-sync' class='fa fa-refresh fa-fw' aria-hidden='true'></i></span>&nbsp;";
-            echo "<span class='label label-".(($app['general']['autodelete'])?'success':'default')."'><i title='Auto-delete' class='fa fa-trash fa-fw' aria-hidden='true'></i></span>&nbsp;";
-			echo "<span class='label label-".(($app['general']['debug'])?'success':'default')."'><i title='Debug mode' class='fa fa-bug fa-fw' aria-hidden='true'></i></span>&nbsp;";
+			echo "<span class='label label-".(($app['general']['autosync'])?'success':'default')."'><i title='Auto-sync ".(($app['general']['autosync'])?'(habilitado)':'(deshabilitado)')."' class='fa fa-refresh fa-fw' aria-hidden='true'></i></span>&nbsp;";
+            echo "<span class='label label-".(($app['general']['debug'])?'warning':(($app['general']['autodelete'])?'success':'default'))."'><i title='Auto-delete ".(($app['general']['debug'])?'(deshabilitado en Debug mode)':(($app['general']['autodelete'])?'(habilitado)':'(deshabilitado)'))."' class='fa fa-trash fa-fw' aria-hidden='true'></i></span>&nbsp;";
+			echo "<span class='label label-".(($app['general']['debug'])?'success':'default')."'><i title='Debug mode ".(($app['general']['debug'])?'(habilitado)':'(deshabilitado)')."' class='fa fa-bug fa-fw' aria-hidden='true'></i></span>&nbsp;";
           ?>
 			</p><ul class="nav navbar-nav navbar-right">
             <li><a href="#">Dashboard</a></li>

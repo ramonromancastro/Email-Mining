@@ -38,6 +38,8 @@
 			</div>
 			<h2 class="sub-header">Alertas activas</h2>
 			<div class="table-responsive">
+				<form action='index.php'>
+					<input type="hidden" name="p" value="acknowledge.php">
 <?php
 	$stmt = mysql_active_alerts($mysqli);
 	$variables = array();
@@ -46,6 +48,7 @@
 	echo "<table class='table table-condensed table-striped small'>";
 	$fields = $stmt->result_metadata();
 	echo "<tr>";
+	echo "<th>#</th>";
 	while ($finfo = $fields->fetch_field()) {
 		if (!in_array($finfo->name,$hidden)) echo "<th>".$finfo->name."</th>";
 		$variables[$finfo->name] = &$data[$finfo->name]; // pass by reference
@@ -56,6 +59,7 @@
 	call_user_func_array(array($stmt, 'bind_result'), $variables);
 	while($stmt->fetch()) {
 		echo "<tr>";
+		echo "<td><input type='checkbox' name='uid[]' value='".$variables['uid']."'/></td>";
 		foreach ($variables as $key=>$value ) {
 			if (!in_array($key,$hidden)){
 				switch ($key) {
@@ -71,13 +75,15 @@
 			}
 		}
 		echo "<td>";
-		echo "<a href='?p=email.php&uid=".$variables['uid']."'>[Read email]</a>";
-		echo " <a href='?p=acknowledge.php&uid=".$variables['uid']."'>[Acknowledge]</a>";
+		echo "<a href='?p=email.php&uid=".$variables['uid']."'><i title='[Read email]' class='fa fa-envelope-o fa-fw' aria-hidden='true'></i></a>";
 		echo "</td>";
 		echo "</tr>";
 	}
 	echo "</table>";
+	echo "<p><strong>Para todos los elementos seleccionados:</strong></p>";
+	echo "<p><input class='btn btn-default' type='submit' value='Marcar como solucionado''></p>";
 	//html_table_from_stmt($stmt,'table table-condensed table-striped small');
 	$stmt->close();
 ?>
+				<form>
 			</div>
