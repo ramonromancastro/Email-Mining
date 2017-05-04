@@ -107,13 +107,13 @@ function mysql_group_source_service_error($mysqli,$source_uid=null,$service_uid=
 }
 
 function mysql_source_service_error($mysqli,$source_uid,$service_uid){
-	global $app;
+	global $config;
 	$sql = "SELECT CASE error WHEN 0 THEN ? ELSE ? END as valor, COUNT(*) as total".
 			" FROM emails".
 			" WHERE source_uid=? AND service_uid=?".
 			" GROUP BY source, service, error";
 	if ($stmt = $mysqli->prepare($sql)) {
-		$stmt->bind_param("ssss",$app['general']['ok'],$app['general']['error'],$source_uid,$service_uid);
+		$stmt->bind_param("ssss",$config['app']['general']['ok'],$config['app']['general']['error'],$source_uid,$service_uid);
 		$stmt->execute();
 	}
 	return $stmt;
@@ -346,24 +346,24 @@ function html_table_from_mysql_result($result,$class){
 }
 
 function collect_mail(){
-	global $app, $mysqli;
+	global $config, $mysqli;
 	
 	//mysql_truncate_events($mysqli);
-	$inbox = imap_open($app['mail']['hostname'],$app['mail']['username'],$app['mail']['password']) or die('Cannot connect to IMAP: ' . imap_last_error());
+	$inbox = imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or die('Cannot connect to IMAP: ' . imap_last_error());
 	$emails = imap_search($inbox,'UNSEEN');
 
 	if($emails) {
-		$app['runtime']['emails'] = count($emails);
+		$config['app']['runtime']['emails'] = count($emails);
 		foreach($emails as $email_number) {
 			imap_setflag_full($inbox, $email_number, "\\Seen");
 			$overview = imap_fetch_overview($inbox,$email_number,0);
 			$title = imap_utf8($overview[0]->subject);
-			foreach ($app['format'] as $expresion){
+			foreach ($config['app']['format'] as $expresion){
 				$found = preg_match($expresion['title'], $title, $values);
 				if ($found){
-					$source = (array_key_exists('source',$expresion['variables']))?$values[$expresion['variables']['source']]:$app['general']['unknown'];
-					$service = (array_key_exists('service',$expresion['variables']))?$values[$expresion['variables']['service']]:$app['general']['unknown'];
-					$status = (array_key_exists('status',$expresion['variables']))?$values[$expresion['variables']['status']]:$app['general']['unknown'];
+					$source = (array_key_exists('source',$expresion['variables']))?$values[$expresion['variables']['source']]:$config['app']['general']['unknown'];
+					$service = (array_key_exists('service',$expresion['variables']))?$values[$expresion['variables']['service']]:$config['app']['general']['unknown'];
+					$status = (array_key_exists('status',$expresion['variables']))?$values[$expresion['variables']['status']]:$config['app']['general']['unknown'];
 					$uid = $overview[0]->uid;
 					$timestamp = strtotime($overview[0]->date);
 					$error=0;
@@ -374,7 +374,7 @@ function collect_mail(){
 					break;
 				}
 			}
-			if (!$found) $app['runtime']['unknown'][] = $overview[0]->date." :: $title";
+			if (!$found) $config['app']['runtime']['unknown'][] = $overview[0]->date." :: $title";
 		}
 		// $message = imap_fetchbody($inbox,$email_number,1.2);
 		// if(!strlen($message)>0){
@@ -386,9 +386,9 @@ function collect_mail(){
 }
 
 function mail_delete($uid){
-	global $app;
+	global $config['app'];
 	
-	$inbox = imap_open($app['mail']['hostname'],$app['mail']['username'],$app['mail']['password']) or die('Cannot connect to IMAP: ' . imap_last_error());
+	$inbox = imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or die('Cannot connect to IMAP: ' . imap_last_error());
 	imap_delete($inbox,$uid,FT_UID);
 	imap_expunge($inbox);
 	imap_close($inbox);

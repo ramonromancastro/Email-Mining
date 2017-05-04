@@ -118,13 +118,13 @@ function mysql_group_source_service_error($mysqli,$source_uid=null,$service_uid=
 }
 
 function mysql_source_service_error($mysqli,$source_uid,$service_uid){
-	global $app;
+	global $config;
 	$sql = "SELECT CASE error WHEN 0 THEN ? ELSE ? END as valor, COUNT(*) as total".
 			" FROM emails".
 			" WHERE source_uid=? AND service_uid=?".
 			" GROUP BY source, service, error";
 	if ($stmt = $mysqli->prepare($sql)) {
-		$stmt->bind_param("ssss",$app['general']['ok'],$app['general']['error'],$source_uid,$service_uid);
+		$stmt->bind_param("ssss",$config['app']['general']['ok'],$config['app']['general']['error'],$source_uid,$service_uid);
 		$stmt->execute();
 	}
 	return $stmt;

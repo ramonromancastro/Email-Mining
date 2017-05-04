@@ -3,7 +3,7 @@
 				<div class="col-xs-12 col-sm-12">
 <?php
 	$uid=$_GET['uid'];
-	$inbox = imap_open($app['mail']['hostname'],$app['mail']['username'],$app['mail']['password']) or die('Cannot connect to IMAP: ' . imap_last_error());
+	$inbox = imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or die('Cannot connect to IMAP: ' . imap_last_error());
 	if ($overview = imap_fetch_overview($inbox,$uid,FT_UID)){
 		$message = imap_fetchbody($inbox,$uid,'1',FT_UID);
 		if(!strlen($message)>0){

@@ -30,7 +30,7 @@
 		}
 	}
 	else
-		echo "<p>".$app['general']['nodata']."</p>";
+		echo "<p>".$config['app']['general']['nodata']."</p>";
 	$stmt->close();
 ?>
 			</ol>

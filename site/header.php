@@ -1,6 +1,4 @@
 <?php
-global $app;
-
 include 'modules/libchart/libchart/classes/libchart.php';
 include 'modules/pchart/class/pData.class.php';
 include 'modules/pchart/class/pDraw.class.php';
@@ -12,7 +10,7 @@ include 'inc.mysql.php';
 include 'inc.init.php';
 
 /* SINCRONIZACION AUTOMATICA DEL CORREO */
-if (skel_is_home() && $app['general']['autosync']) collect_mail();
+if (skel_is_home() && $config['app']['general']['autosync']) collect_mail();
 
 ?>
 <!DOCTYPE html>
@@ -26,7 +24,7 @@ if (skel_is_home() && $app['general']['autosync']) collect_mail();
     <meta name="author" content="Ramon Roman Castro <ramonromancastro@gmail.com>">
 	<link rel="shortcut icon" href="favicon.ico" />
 	<title>Email Mining</title>
-	<?php echo (skel_is_home() && isset($app['general']['refresh']))?"<meta http-equiv='refresh' content='".$app['general']['refresh']."'>":""; ?>
+	<?php echo (skel_is_home() && isset($config['app']['general']['refresh']))?"<meta http-equiv='refresh' content='".$config['app']['general']['refresh']."'>":""; ?>
 	
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -65,9 +63,9 @@ if (skel_is_home() && $app['general']['autosync']) collect_mail();
 		<div id="navbar" class="navbar-collapse collapse">
 		    <p class='navbar-text'>
 		  <?php
-			echo "<span class='label label-".(($app['general']['autosync'])?'success':'default')."'><i title='Auto-sync ".(($app['general']['autosync'])?'(habilitado)':'(deshabilitado)')."' class='fa fa-refresh fa-fw' aria-hidden='true'></i></span>&nbsp;";
-            echo "<span class='label label-".(($app['general']['debug'])?'warning':(($app['general']['autodelete'])?'success':'default'))."'><i title='Auto-delete ".(($app['general']['debug'])?'(deshabilitado en Debug mode)':(($app['general']['autodelete'])?'(habilitado)':'(deshabilitado)'))."' class='fa fa-trash fa-fw' aria-hidden='true'></i></span>&nbsp;";
-			echo "<span class='label label-".(($app['general']['debug'])?'success':'default')."'><i title='Debug mode ".(($app['general']['debug'])?'(habilitado)':'(deshabilitado)')."' class='fa fa-bug fa-fw' aria-hidden='true'></i></span>&nbsp;";
+			echo "<span class='label label-".(($config['app']['general']['autosync'])?'success':'default')."'><i title='Auto-sync ".(($config['app']['general']['autosync'])?'(habilitado)':'(deshabilitado)')."' class='fa fa-refresh fa-fw' aria-hidden='true'></i></span>&nbsp;";
+            echo "<span class='label label-".(($config['app']['general']['autodelete'])?'success':'default')."'><i title='Auto-delete ".(($config['app']['general']['autodelete'])?'(habilitado)':'(deshabilitado)')."' class='fa fa-trash fa-fw' aria-hidden='true'></i></span>&nbsp;";
+			echo "<span class='label label-".(($config['app']['general']['debug'])?'success':'default')."'><i title='Debug mode ".(($config['app']['general']['debug'])?'(habilitado)':'(deshabilitado)')."' class='fa fa-bug fa-fw' aria-hidden='true'></i></span>&nbsp;";
           ?>
 			</p><ul class="nav navbar-nav navbar-right">
             <li><a href="#">Dashboard</a></li>
@@ -93,7 +91,7 @@ if (skel_is_home() && $app['general']['autosync']) collect_mail();
             <li><a href="?p=sync.php"><i title="Sincronizar ahora!" class='fa fa-refresh fa-2x' aria-hidden='true'></i></a></li>
           </ul>
           <div class="nav nav-sidebar">
-			<!--<p class="navbar-text small alert alert-<?php echo ($app['general']['autosync'])?'success':'warning';?>">Sincronización automática <?php echo ($app['general']['autosync'])?'':'des';?>habilitada.<?php echo (!$app['general']['autosync'])?" Pulsa <a href='?p=sync.php' title='Sincronizar ahora!'>aquí</a> para sincronizar manualmente.":""; ?></p>-->
+			<!--<p class="navbar-text small alert alert-<?php echo ($config['app']['general']['autosync'])?'success':'warning';?>">Sincronización automática <?php echo ($config['app']['general']['autosync'])?'':'des';?>habilitada.<?php echo (!$config['app']['general']['autosync'])?" Pulsa <a href='?p=sync.php' title='Sincronizar ahora!'>aquí</a> para sincronizar manualmente.":""; ?></p>-->
           </div>
         </div>
         <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->

@@ -25,11 +25,11 @@
 ?>
 				</div>
 <?php
-	if ($app['general']['autosync']){
+	if ($config['app']['general']['autosync']){
 ?>
 				<div class="col-xs-4 col-sm-4">
 					<div class="alert alert-success text-center">
-						<?php echo "<span class='number'>".$app['runtime']['sync']['analyzed']."</span><span class='text'> correo(s) analizado(s)</span>"; ?>
+						<?php echo "<span class='number'>".$config['app']['runtime']['sync']['analyzed']."</span><span class='text'> correo(s) analizado(s)</span>"; ?>
 					</div>
 				</div>
 <?php
