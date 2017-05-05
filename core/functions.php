@@ -43,4 +43,10 @@ function skel_load_content(){
 	include 'site/'.$runtime['page'];
 	include 'site/footer.php';
 }
+
+function skel_load_login(){
+	global $runtime,$mysqli,$config;
+	
+	include 'core/login.php';
+}
 ?>

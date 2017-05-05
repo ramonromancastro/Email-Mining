@@ -4,6 +4,7 @@ include 'modules/pchart/class/pData.class.php';
 include 'modules/pchart/class/pDraw.class.php';
 include 'modules/pchart/class/pImage.class.php';
 include 'modules/pchart/class/pPie.class.php';
+include 'modules/gravatar/gravatar.php';
 
 include 'inc.functions.php';
 include 'inc.mysql.php';
@@ -61,18 +62,22 @@ if (skel_is_home() && $config['app']['general']['autosync']) collect_mail();
           <a class="navbar-brand" href="index.php"><img class="pull-left" title="[Logo]" alt="[Logo]" src="site/images/logo.png"/><span class="pull-left name">Email Mining</span></a>
         </div>
 		<div id="navbar" class="navbar-collapse collapse">
-		    <p class='navbar-text'>
+		  <p class='navbar-text'>
 		  <?php
 			echo "<span class='label label-".(($config['app']['general']['autosync'])?'success':'default')."'><i title='Auto-sync ".(($config['app']['general']['autosync'])?'(habilitado)':'(deshabilitado)')."' class='fa fa-refresh fa-fw' aria-hidden='true'></i></span>&nbsp;";
             echo "<span class='label label-".(($config['app']['general']['autodelete'])?'success':'default')."'><i title='Auto-delete ".(($config['app']['general']['autodelete'])?'(habilitado)':'(deshabilitado)')."' class='fa fa-trash fa-fw' aria-hidden='true'></i></span>&nbsp;";
 			echo "<span class='label label-".(($config['app']['general']['debug'])?'success':'default')."'><i title='Debug mode ".(($config['app']['general']['debug'])?'(habilitado)':'(deshabilitado)')."' class='fa fa-bug fa-fw' aria-hidden='true'></i></span>&nbsp;";
           ?>
-			</p><ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
-          </ul>
+		  </p>
+		  <ul class="nav navbar-nav navbar-right">
+			<li><a href="#">Dashboard</a></li>
+			<li><a href="#">Settings</a></li>
+			<li><a href="#">Profile</a></li>
+			<li><a href="#">Help</a></li>
+			<?php if (login_islogged()){ ?>
+			<li><a href="#"><img src="<?php echo get_gravatar(login_user_mail(), 20); ?>"/> <?php echo login_user_name(); ?></a></li>
+			<?php } ?>
+		  </ul>
 		  <form class="navbar-form navbar-right">
 		    <input id="p" name="p" type="hidden" value="search.php">
             <input id="pattern" name="pattern" type="text" class="form-control" placeholder="Buscar...">

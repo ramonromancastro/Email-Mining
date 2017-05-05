@@ -1,0 +1,1 @@
+GRANT SELECT,INSERT,UPDATE,DELETE,DROP ON emailmining.* TO emailmining@localhost IDENTIFIED BY 'p@ssw0rd';
