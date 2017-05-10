@@ -186,7 +186,7 @@ function collect_mail(){
 		$mailbox = 'ALL';
 	}
 
-	$inbox = imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or die('Cannot connect to IMAP: ' . imap_last_error());
+	$inbox = @imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or finish_and_die('Cannot connect to IMAP: ' . imap_last_error());
 	$emails = imap_search($inbox,$mailbox);
 
 	if($emails) {
@@ -227,7 +227,7 @@ function email_inbox(){
 	global $config, $mysqli;
 	
 	$result = array();
-	$inbox = imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or die('Cannot connect to IMAP: ' . imap_last_error());
+	$inbox = @imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or finish_and_die('Cannot connect to IMAP: ' . imap_last_error());
 	$emails = imap_search($inbox,'ALL');
 
 	if($emails) {
@@ -249,7 +249,7 @@ function purge_inbox_acknowledge_from_stmt($stmt,$field){
 	$variables = array();
 	$data = array();
 	
-	$inbox = imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or die('Cannot connect to IMAP: ' . imap_last_error());
+	$inbox = @imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or finish_and_die('Cannot connect to IMAP: ' . imap_last_error());
 	
 	$fields = $stmt->result_metadata();
 	while ($finfo = $fields->fetch_field()) {
@@ -258,7 +258,7 @@ function purge_inbox_acknowledge_from_stmt($stmt,$field){
 	$fields->close();
 	call_user_func_array(array($stmt, 'bind_result'), $variables);
 	while($stmt->fetch()) {
-		imap_delete($inbox,$variables[$field],FT_UID);
+		imap_delete($inbox,$variables[$field],FT_UID) or finish_and_die('Cannot delete on IMAP: ' . imap_last_error());
 	}
 
 	imap_expunge($inbox);
@@ -268,9 +268,16 @@ function purge_inbox_acknowledge_from_stmt($stmt,$field){
 function mail_delete($uid){
 	global $config;
 	
-	$inbox = imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or die('Cannot connect to IMAP: ' . imap_last_error());
+	$inbox = @imap_open($config['app']['mail']['hostname'],$config['app']['mail']['username'],$config['app']['mail']['password']) or finish_and_die('Cannot connect to IMAP: ' . imap_last_error());
 	imap_delete($inbox,$uid,FT_UID);
 	imap_expunge($inbox);
 	imap_close($inbox);
+}
+
+function finish_and_die($msg){
+	echo "<h1 class='page-header' style='color:red'><i class='fa fa-exclamation-triangle fa-fw' aria-hidden='true' style='float:right;'></i>Ups, ha ocurrido un error inesperado</h1>";
+	echo "<p class='alert alert-danger'>$msg</p>";
+	include 'site/footer.php';
+	exit;
 }
 ?>

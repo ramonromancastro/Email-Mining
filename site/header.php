@@ -10,9 +10,7 @@ include 'inc.functions.php';
 include 'inc.mysql.php';
 include 'inc.init.php';
 
-/* SINCRONIZACION AUTOMATICA DEL CORREO */
-if (skel_is_home() && $config['app']['general']['autosync']) collect_mail();
-
+error_reporting(E_ERROR | E_WARNING);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,3 +99,7 @@ if (skel_is_home() && $config['app']['general']['autosync']) collect_mail();
         </div>
         <!--<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">-->
 		<div class="main">
+<?php
+	/* SINCRONIZACION AUTOMATICA DEL CORREO */
+	if (skel_is_home() && $config['app']['general']['autosync']) collect_mail();
+?>
