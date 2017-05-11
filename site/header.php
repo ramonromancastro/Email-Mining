@@ -9,8 +9,6 @@ include 'modules/gravatar/gravatar.php';
 include 'inc.functions.php';
 include 'inc.mysql.php';
 include 'inc.init.php';
-
-error_reporting(E_ERROR | E_WARNING);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +21,7 @@ error_reporting(E_ERROR | E_WARNING);
     <meta name="author" content="Ramon Roman Castro <ramonromancastro@gmail.com>">
 	<link rel="shortcut icon" href="favicon.ico" />
 	<title>Email Mining</title>
-	<?php echo (skel_is_home() && isset($config['app']['general']['refresh']))?"<meta http-equiv='refresh' content='".$config['app']['general']['refresh']."'>":""; ?>
+	<?php echo (rrcphpbase_is_home() && isset($config['app']['general']['refresh']))?"<meta http-equiv='refresh' content='".$config['app']['general']['refresh']."'>":""; ?>
 	
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -72,15 +70,15 @@ error_reporting(E_ERROR | E_WARNING);
 			<li><a href="#">Settings</a></li>
 			<li><a href="#">Profile</a></li>
 			<li><a href="#">Help</a></li>
-			<?php if (login_islogged()){ ?>
+			<?php if (rrcphpbase_login_islogged()){ ?>
 			<li class="dropdown">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img src="<?php echo get_gravatar(login_user_mail(), 20); ?>"/> <?php echo login_user_name(); ?> <span class="caret"></span></a>
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img src="<?php echo get_gravatar(rrcphpbase_login_user_mail(), 20); ?>"/> <?php echo rrcphpbase_login_user_name(); ?> <span class="caret"></span></a>
               <ul class="dropdown-menu">
-			    <li class="dropdown-header"><?php echo login_authText(); ?></li>
-				<li><a href="#"><i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i> <?php echo login_user_id(); ?></a></li>
-				<li><a href="#"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> <?php echo login_user_mail(); ?></a></li>
+			    <li class="dropdown-header"><?php echo rrcphpbase_login_authText(); ?></li>
+				<li><a href="#"><i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i> <?php echo rrcphpbase_login_user_id(); ?></a></li>
+				<li><a href="#"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> <?php echo rrcphpbase_login_user_mail(); ?></a></li>
 				<li role="separator" class="divider"></li>
-                <li><a href="<?php echo login_logoutPage(); ?>">Cerrar sesión</a></li>
+                <li><a href="<?php echo rrcphpbase_login_logoutPage(); ?>">Cerrar sesión</a></li>
               </ul>
             </li>
 			<?php } ?>
@@ -110,5 +108,5 @@ error_reporting(E_ERROR | E_WARNING);
 		<div class="main">
 <?php
 	/* SINCRONIZACION AUTOMATICA DEL CORREO */
-	if (skel_is_home() && $config['app']['general']['autosync']) collect_mail();
+	if (rrcphpbase_is_home() && $config['app']['general']['autosync']) collect_mail();
 ?>

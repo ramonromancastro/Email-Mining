@@ -1,11 +1,11 @@
 <?php
-function skel_is_home(){
+function rrcphpbase_is_home(){
 	global $runtime;
 	
 	return ($runtime['page'] == 'home.php');
 }
 
-function skel_db_open(){
+function rrcphpbase_db_open(){
 	global $config,$mysqli;
 	
 	$mysqli = new mysqli($config['db']['host'], $config['db']['username'], $config['db']['password'], $config['db']['db']);
@@ -15,28 +15,28 @@ function skel_db_open(){
 	}
 }
 
-function skel_db_close(){
+function rrcphpbase_db_close(){
 	global $mysqli;
 	
 	$mysqli->close();
 }
 
-function skel_calculate_page(){
+function rrcphpbase_calculate_page(){
 	global $runtime;
 
 	$runtime['page'] = 'home.php';
 	if(isset($_GET['p']) && !empty($_GET['p'])){
 		if ($_GET['p'] != basename(__FILE__)){
 			$runtime['page'] = $_GET['p'];
-			$page_path = realpath(SKEL_ROOT.'/site/'.$runtime['page']);
-			if (empty($page_path) || strpos($page_path,SKEL_ROOT) === false || !is_file($page_path)){
+			$page_path = realpath(rrcphpbase_ROOT.'/site/'.$runtime['page']);
+			if (empty($page_path) || strpos($page_path,rrcphpbase_ROOT) === false || !is_file($page_path)){
 				$runtime['page'] = '404.php';
 			}
 		}
 	}
 }
 
-function skel_load_content(){
+function rrcphpbase_load_content(){
 	global $runtime,$mysqli,$config;
 	
 	include 'site/header.php';
@@ -44,9 +44,20 @@ function skel_load_content(){
 	include 'site/footer.php';
 }
 
-function skel_load_login(){
+function rrcphpbase_load_login(){
 	global $runtime,$mysqli,$config;
 	
 	include 'core/login.php';
+}
+
+function rrcphpbase_requirements_requested(){
+	return isset($_GET['requirements']);
+	
+}
+
+function rrcphpbase_load_requirements(){
+	global $runtime,$mysqli,$config;
+	
+	include 'core/requirements.php';
 }
 ?>

@@ -3,7 +3,7 @@ $session = session_get_cookie_params();
 session_set_cookie_params($session['lifetime'],$config['session']['cookie_path']);
 session_start();
 
-function login_authText(){
+function rrcphpbase_login_authText(){
 	global $config;
 	
 	switch ($config['session']['auth']['type']) {
@@ -16,7 +16,7 @@ function login_authText(){
 	}
 }
 
-function login_ad($username,$password){
+function rrcphpbase_login_ad($username,$password){
 	global $config;
 	
 	$result = false;
@@ -51,7 +51,7 @@ function login_ad($username,$password){
 	return $result;
 }
 
-function login_ldap($username,$password){
+function rrcphpbase_login_ldap($username,$password){
 	global $config;
 	
 	$result = false;
@@ -81,42 +81,42 @@ function login_ldap($username,$password){
 	return $result;
 }
 
-function login_user_name(){
+function rrcphpbase_login_user_name(){
 	global $config;
 	return $_SESSION['name'];
 }
 
-function login_user_id(){
+function rrcphpbase_login_user_id(){
 	global $config;
 	return $_SESSION['uid'];
 }
 
-function login_user_mail(){
+function rrcphpbase_login_user_mail(){
 	global $config;
 	return $_SESSION['mail'];
 }
 
-function login_islogged(){
+function rrcphpbase_login_islogged(){
 	global $config;
 	return isset($_SESSION['uid']);
 }
 
-function login_islogout(){
+function rrcphpbase_login_islogout(){
 	global $config;
 	return isset($_GET['logout']);
 }
 
-function login_isactive(){
+function rrcphpbase_login_isactive(){
 	global $config;
 	return $config['session']['auth']['enable'];
 }
 
-function login_isneeded(){
+function rrcphpbase_login_isneeded(){
 	global $config;
-	return (login_isactive() && !login_islogged());
+	return (rrcphpbase_login_isactive() && !rrcphpbase_login_islogged());
 }
 
-function login_logout(){
+function rrcphpbase_login_logout(){
 	# http://php.net/manual/es/function.session-destroy.php
 	$_SESSION = array();
 	
@@ -128,7 +128,7 @@ function login_logout(){
 	session_destroy();
 }
 
-function login_logoutPage(){
+function rrcphpbase_login_logoutPage(){
 	echo "?logout";
 }
 ?>

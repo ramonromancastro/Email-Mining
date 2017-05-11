@@ -1,5 +1,5 @@
 <?php
-define('SKEL_ROOT', getcwd());
+define('RRCPHPBASE_ROOT', getcwd());
 
 include 'core/constants.php';
 include 'config.php';
@@ -7,32 +7,39 @@ include 'core/functions.php';
 include 'core/auth.php';
 include 'site/config.php';
 
+# Comprobamos si se desea una comporbación de requisitos
+
+if (rrcphpbase_requirements_requested()){
+	rrcphpbase_load_requirements();
+	exit;
+}
+
 # Abrimos la conexión a la base de datos
 
-skel_db_open();
+rrcphpbase_db_open();
 
 # Comprobamos si se desea cerrar la sesión
 
-if (login_islogout()){
-	login_logout();
+if (rrcphpbase_login_islogout()){
+	rrcphpbase_login_logout();
 }
 
 # Comprobamos la necesidad de iniciar sesión
 
-if (login_isneeded()){
-	skel_load_login();
+if (rrcphpbase_login_isneeded()){
+	rrcphpbase_load_login();
 }
 
 # Comrpobamos si la sesión está iniciada o no necesita inicio de sesión
 
-if (!login_isneeded() || login_islogged()){
+if (!rrcphpbase_login_isneeded() || rrcphpbase_login_islogged()){
 	
 	# Mostramos el contenido seleccionado
-	skel_calculate_page();
-	skel_load_content();
+	rrcphpbase_calculate_page();
+	rrcphpbase_load_content();
 }
 
 # Cerramos la conexión a la base de datos
 
-skel_db_close();
+rrcphpbase_db_close();
 ?>

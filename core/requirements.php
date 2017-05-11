@@ -1,19 +1,13 @@
 <?php
-
-$username = isset($_POST['username'])?$_POST['username']:null;
-$password = isset($_POST['password'])?$_POST['password']:null;
-
-if (!empty($username) && !empty($password)){
-	switch ($config['session']['auth']['type']) {
-		case "ad":
-			rrcphpbase_login_ad($username,$password);
-			break;
-		case "ldap":
-			rrcphpbase_login_ldap($username,$password);
-			break;
-	}
+function apache_module_exists($module){
+	print_r(apache_get_modules());
+    return in_array($module, apache_get_modules());
 }
-if (!rrcphpbase_login_islogged()){
+
+function print_check($msg,$status){
+	$icon=($status)?'success':'error';
+	echo "<p class='check'><img src='core/images/$icon.png' alt='$icon' title='$icon'> $msg</p>";
+}
 ?>
 <!DOCTYPE html><html class=''>
 <head>
@@ -63,8 +57,11 @@ if (!rrcphpbase_login_islogged()){
   transition: all 0.3 ease;
   cursor: pointer;
 }
-.form button:hover,.form button:active,.form button:focus {
+.form .button:hover,.form .button:active,.form .button:focus {
   background: #43A047;
+}
+.form .check {
+  text-align: left;
 }
 .form .message {
   margin: 15px 0 0;
@@ -109,7 +106,7 @@ if (!rrcphpbase_login_islogged()){
   color: #EF3B3A;
 }
 body {
-	 background-image: url("<?php echo ((is_file($config['login']['image']))?$config['login']['image']:RRCPHPBASE_LOGIN_IMAGE); ?>");
+	 background-image: url("<?php echo RRCPHPBASE_REQUIREMENTS_IMAGE; ?>");
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center; 
@@ -126,19 +123,20 @@ body {
 <body>
 <div class="login-page">
   <div class="form">
+	<h1><?php echo RRCPHPBASE_TITLE; ?></h1>
+    <p>Comprobación de los requisitos de funcionamiento de rrcPHPBase</p>
+	<?php
+	print_check('Extensión <strong>gd</strong> de PHP',extension_loaded('imap'));
+	print_check('Extensión <strong>imap</strong> de PHP',extension_loaded('imap'));
+	print_check('Extensión <strong>ldap</strong> de PHP',extension_loaded('ldap'));
+	print_check('Extensión <strong>mysqli</strong> de PHP',extension_loaded('mysqli'));
+	?>
     <form class="login-form" method="POST" action="index.php">
-	  <h1><?php echo $config['login']['title']; ?></h1>
-	  <p><?php echo $config['login']['subtitle']; ?></p>
-      <input type="text" name="username" placeholder="usuario"/>
-      <input type="password" name="password" placeholder="contraseña"/>
-      <button>login</button>
-      <p class="message">Inicio de sesión integrado con <strong><?php echo rrcphpbase_login_authText(); ?></strong></p>
+      <button>Comenzar</button>
+      <p class="message">Icons made by <a href="http://www.flaticon.com/authors/madebyoliver" title="Madebyoliver">Madebyoliver</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></p>
 	  <p class="message"><?php echo RRCPHPBASE_COPYRIGHT; ?></p>
     </form>
   </div>
 </div>
 </body>
 </html>
-<?php
-}
-?>
