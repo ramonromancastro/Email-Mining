@@ -4,7 +4,14 @@ $username = isset($_POST['username'])?$_POST['username']:null;
 $password = isset($_POST['password'])?$_POST['password']:null;
 
 if (!empty($username) && !empty($password)){
-	login_ldap($username,$password);
+	switch ($config['session']['auth']['type']) {
+		case "ad":
+			login_ad($username,$password);
+			break;
+		case "ldap":
+			login_ldap($username,$password);
+			break;
+	}
 }
 if (!login_islogged()){
 ?>
@@ -20,12 +27,13 @@ if (!login_islogged()){
   padding: 8% 0 0;
   margin: auto;
 }
+
 .form {
   position: relative;
   z-index: 1;
   background: #FFFFFF;
   max-width: 360px;
-  margin: 0 auto 100px;
+  margin: 0 auto;/* 100px;*/
   padding: 45px;
   text-align: center;
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
@@ -101,22 +109,31 @@ if (!login_islogged()){
   color: #EF3B3A;
 }
 body {
-  background: #76b852; /* fallback for old browsers */
-  background: -webkit-linear-gradient(right, #76b852, #8DC26F);
-  background: -moz-linear-gradient(right, #76b852, #8DC26F);
-  background: -o-linear-gradient(right, #76b852, #8DC26F);
-  background: linear-gradient(to left, #76b852, #8DC26F);
+	 background-image: url("<?php echo $config['login']['image']; ?>");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center; 
+  background: #fffff; /* fallback for old browsers */
+  // background: -webkit-linear-gradient(right, #76b852, #8DC26F);
+  // background: -moz-linear-gradient(right, #76b852, #8DC26F);
+  // background: -o-linear-gradient(right, #76b852, #8DC26F);
+  // background: linear-gradient(to left, #76b852, #8DC26F);
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;      
-}</style></head><body>
+}</style>
+</head>
+<body>
 <div class="login-page">
   <div class="form">
-    <form class="login-form" method="POST">
-      <input type="text" name="username" placeholder="username"/>
-      <input type="password" name="password" placeholder="password"/>
+    <form class="login-form" method="POST" action="index.php">
+	  <h1><?php echo $config['login']['title']; ?></h1>
+	  <p><?php echo $config['login']['subtitle']; ?></p>
+      <input type="text" name="username" placeholder="usuario"/>
+      <input type="password" name="password" placeholder="contraseña"/>
       <button>login</button>
-      <p class="message">Inicio de sesión integrado con <strong><?php echo $config['session']['auth']['type']; ?></strong></p>
+      <p class="message">Inicio de sesión integrado con <strong><?php echo login_authText(); ?></strong></p>
+	  <p class="message">Desarrollado con <a href="http://www.rrc2software.com">rrcSkel</a></p>
     </form>
   </div>
 </div>

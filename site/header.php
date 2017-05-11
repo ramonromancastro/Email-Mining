@@ -73,7 +73,16 @@ error_reporting(E_ERROR | E_WARNING);
 			<li><a href="#">Profile</a></li>
 			<li><a href="#">Help</a></li>
 			<?php if (login_islogged()){ ?>
-			<li><a href="#"><img src="<?php echo get_gravatar(login_user_mail(), 20); ?>"/> <?php echo login_user_name(); ?></a></li>
+			<li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><img src="<?php echo get_gravatar(login_user_mail(), 20); ?>"/> <?php echo login_user_name(); ?> <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+			    <li class="dropdown-header"><?php echo login_authText(); ?></li>
+				<li><a href="#"><i class="fa fa-user-circle-o fa-fw" aria-hidden="true"></i> <?php echo login_user_id(); ?></a></li>
+				<li><a href="#"><i class="fa fa-envelope fa-fw" aria-hidden="true"></i> <?php echo login_user_mail(); ?></a></li>
+				<li role="separator" class="divider"></li>
+                <li><a href="<?php echo login_logoutPage(); ?>">Cerrar sesión</a></li>
+              </ul>
+            </li>
 			<?php } ?>
 		  </ul>
 		  <form class="navbar-form navbar-right">

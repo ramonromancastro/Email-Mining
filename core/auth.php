@@ -3,25 +3,74 @@ $session = session_get_cookie_params();
 session_set_cookie_params($session['lifetime'],$config['session']['cookie_path']);
 session_start();
 
-// Devuelve un string con el nombre del usuaario si el acceso se ha comprobado satisfactoriamente
-// Devuelve NULL en cualquier otro caso
+function login_authText(){
+	global $config;
+	
+	switch ($config['session']['auth']['type']) {
+		case "ad":
+			return "Active Directory";
+			break;
+		case "ldap":
+			return "LDAP";
+			break;
+	}
+}
+
+function login_ad($username,$password){
+	global $config;
+	
+	$result = false;
+	
+	$filter = "(sAMAccountName=$username)";
+	if ($config['session']['auth']['ad']['memberof']){
+		$filter = "(&$filter(memberOf:1.2.840.113556.1.4.1941:=".$config['session']['auth']['ad']['memberof']."))";
+	}
+
+	//ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
+	$ldapconn = @ldap_connect($config['session']['auth']['ad']['domain'],$config['session']['auth']['ad']['port']);
+	if ($ldapconn){
+		ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+		ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+		$ldapbind = @ldap_bind($ldapconn, $username.'@'.$config['session']['auth']['ad']['domain'], $password);
+		if ($ldapbind){
+			$ldapresult = ldap_search($ldapconn, $config['session']['auth']['ad']['dn'],$filter,array('sAMAccountName','displayname','mail'));
+			
+			if ($ldapresult){
+				$ldapentry = @ldap_get_entries($ldapconn, $ldapresult);
+				if (($ldapentry) && ($ldapentry['count'])){
+					$_SESSION['uid'] = $ldapentry[0]['samaccountname'][0];
+					$_SESSION['name'] = $ldapentry[0]['displayname'][0];
+					$_SESSION['mail'] = $ldapentry[0]['mail'][0];
+					$result = true;
+				}
+			}
+		}
+		ldap_close($ldapconn);
+	}
+
+	return $result;
+}
+
 function login_ldap($username,$password){
 	global $config;
 	
 	$result = false;
+	$userdn = "uid=$username," . $config['session']['auth']['ldap']['dn'];
 
 	//ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
 	$ldapconn = @ldap_connect($config['session']['auth']['ldap']['host'],$config['session']['auth']['ldap']['port']);
 	if ($ldapconn){
-		ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, $config['session']['auth']['ldap']['protocol_version']);
-		$ldapbind = @ldap_bind($ldapconn, sprintf($config['session']['auth']['ldap']['base_dn'], $username), $password);
+		ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+		ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+		$ldapbind = @ldap_bind($ldapconn, $userdn, $password);
 		if ($ldapbind){
-			$ldapresult = @ldap_read($ldapconn, sprintf($config['session']['auth']['ldap']['base_dn'], $username), '(objectclass=*)',array($config['session']['auth']['ldap']['uid'],$config['session']['auth']['ldap']['mail']));
+			$ldapresult = ldap_search($ldapconn, $config['session']['auth']['ldap']['dn'], "(uid=$username)",array('uid','displayName','mail'));
 			if ($ldapresult){
 				$ldapentry = @ldap_get_entries($ldapconn, $ldapresult);
-				if ($ldapentry){
-					$_SESSION[$config['session']['uid']] = $ldapentry[0][$config['session']['auth']['ldap']['uid']][0];
-					$_SESSION[$config['session']['mail']] = $ldapentry[0][$config['session']['auth']['ldap']['mail']][0];
+				if (($ldapentry) && ($ldapentry['count'])){
+					$_SESSION['uid'] = $ldapentry[0]['uid'][0];
+					$_SESSION['name'] = $ldapentry[0]['displayname'][0];
+					$_SESSION['mail'] = $ldapentry[0]['mail'][0];
 					$result = true;
 				}
 			}
@@ -34,17 +83,27 @@ function login_ldap($username,$password){
 
 function login_user_name(){
 	global $config;
-	return $_SESSION[$config['session']['uid']];
+	return $_SESSION['name'];
+}
+
+function login_user_id(){
+	global $config;
+	return $_SESSION['uid'];
 }
 
 function login_user_mail(){
 	global $config;
-	return $_SESSION[$config['session']['mail']];
+	return $_SESSION['mail'];
 }
 
 function login_islogged(){
 	global $config;
-	return isset($_SESSION[$config['session']['uid']]);
+	return isset($_SESSION['uid']);
+}
+
+function login_islogout(){
+	global $config;
+	return isset($_GET['logout']);
 }
 
 function login_isactive(){
@@ -55,5 +114,21 @@ function login_isactive(){
 function login_isneeded(){
 	global $config;
 	return (login_isactive() && !login_islogged());
+}
+
+function login_logout(){
+	# http://php.net/manual/es/function.session-destroy.php
+	$_SESSION = array();
+	
+	if (ini_get("session.use_cookies")) {
+		$params = session_get_cookie_params();
+		setcookie(session_name(),'',time() - 42000,$params["path"], $params["domain"],$params["secure"], $params["httponly"]);
+	}
+	
+	session_destroy();
+}
+
+function login_logoutPage(){
+	echo "?logout";
 }
 ?>
