@@ -15,7 +15,7 @@ Por el momento dispone de las siguientes características:
 + Autentificación mediante Active Directory o LDAP.
 + Personalización de la página de inicio de sesión (título, subtítulo e imagen de fondo).
 + Página de autocomprobación de requisitos (index.php?requirements).
-+ Acceso mediante una única página (index.php?p=<pagina_seleccionada>).
++ Acceso mediante una única página (index.php?p=&lt;pagina_seleccionada&gt;).
 
 ## Funcionalidad prevista
 
@@ -40,7 +40,7 @@ Se facilita una plantilla con todos los posibles valores de configuración [conf
 
 ### Formato del archivo de configuración [site/config.php]
 
-$config['app'][<identificador>] = <valor>;
+$config['app'][&lt;identificador&gt;] = &lt;valor&gt;;
 
 ## Extensiones de PHP requeridas
 
