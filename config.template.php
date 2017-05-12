@@ -6,7 +6,7 @@
 $config['session']['cookie_path'] = '/path/to/installation/dir/';
 
 $config['session']['auth']['enable'] = true; // Habilita/Deshabilita el acceso restringido
-$config['session']['auth']['type'] = 'ad'; // Metodo de autentificación (ad|ldap)
+$config['session']['auth']['type'] = 'ldap'; // Metodo de autentificación (ad|ldap)
 
 $config['session']['auth']['ad']['domain'] = 'domain.local';
 $config['session']['auth']['ad']['port'] = 389;
@@ -16,6 +16,13 @@ $config['session']['auth']['ad']['memberof'] = 'CN=Group,OU=Unit,DC=domain,DC=lo
 $config['session']['auth']['ldap']['host'] = 'ldaps://ldap.domain.local';
 $config['session']['auth']['ldap']['port'] = 636;
 $config['session']['auth']['ldap']['dn'] = 'o=unit,o=domain,c=local';
+
+/***************************/
+/* Configuración del login */
+/***************************/
+
+$config['login']['title'] = 'Application name';
+$config['login']['subtitle'] = 'A short description';
 
 /**********************************************/
 /* Configuración de acceso a la base de datos */

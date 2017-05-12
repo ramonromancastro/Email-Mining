@@ -109,7 +109,7 @@ if (!rrcphpbase_login_islogged()){
   color: #EF3B3A;
 }
 body {
-	 background-image: url("<?php echo ((is_file($config['login']['image']))?$config['login']['image']:RRCPHPBASE_LOGIN_IMAGE); ?>");
+	 background-image: url("<?php echo ((is_file('site/images/login.jpg'))?'site/images/login.jpg':RRCPHPBASE_LOGIN_IMAGE); ?>");
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center; 

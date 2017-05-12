@@ -12,15 +12,6 @@ $config['app']['general']['autosync'] = false; // Sincroniza de manera automátic
 $config['app']['general']['autodelete'] = true; // Elimina los correos que no son de error del servidor mientras realiza la sincronización.
 $config['app']['general']['debug'] = true; // Vacía la base de datos y descarga todos los emails en cada sincronización, sin eliminar correos.
 
-/**********************************************/
-/* Configuración de acceso a la base de datos */
-/**********************************************/
-
-$config['app']['db']['host'] = '127.0.0.1';
-$config['app']['db']['db'] = 'emailmining';
-$config['app']['db']['username'] = 'emailmining';
-$config['app']['db']['password'] = 'p@ssw0rd';
-
 /*************************************************/
 /* Configuración de acceso al correo electrónico */
 /*************************************************/
