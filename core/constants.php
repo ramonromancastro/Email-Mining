@@ -5,6 +5,10 @@ define("RRCPHPBASE_COPYRIGHT", "Desarrollado con <a href='http://www.rrc2softwar
 define("RRCPHPBASE_VERSION", "0.3");
 define("RRCPHPBASE_LOGIN_IMAGE", "core/images/login.jpg");
 define("RRCPHPBASE_REQUIREMENTS_IMAGE", "core/images/requirements.jpg");
+define("RRCPHPBASE_LOGIN_OK", 0);
+define("RRCPHPBASE_LOGIN_CANNOT_CONNECT", 1);
+define("RRCPHPBASE_LOGIN_CANNOT_BIND", 2);
+define("RRCPHPBASE_LOGIN_INVALID_USERNAME_PASSWORD", 3);
 $mysqli = null;
 $runtime = null;
 $config = null;

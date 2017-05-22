@@ -28,8 +28,8 @@ function rrcphpbase_calculate_page(){
 	if(isset($_GET['p']) && !empty($_GET['p'])){
 		if ($_GET['p'] != basename(__FILE__)){
 			$runtime['page'] = $_GET['p'];
-			$page_path = realpath(rrcphpbase_ROOT.'/site/'.$runtime['page']);
-			if (empty($page_path) || strpos($page_path,rrcphpbase_ROOT) === false || !is_file($page_path)){
+			$page_path = realpath(RRCPHPBASE_ROOT.'/site/'.$runtime['page']);
+			if (empty($page_path) || strpos($page_path,RRCPHPBASE_ROOT) === false || !is_file($page_path)){
 				$runtime['page'] = '404.php';
 			}
 		}

@@ -11,6 +11,9 @@ if (!empty($username) && !empty($password)){
 		case "ldap":
 			rrcphpbase_login_ldap($username,$password);
 			break;
+		case "mysql":
+			rrcphpbase_login_mysql($username,$password);
+			break;
 	}
 }
 if (!rrcphpbase_login_islogged()){
@@ -108,6 +111,13 @@ if (!rrcphpbase_login_islogged()){
 .container .info span .fa {
   color: #EF3B3A;
 }
+
+.invalid{
+  color: red;
+  text-align: center;
+  margin: 15px 0;
+  font-size: 12px
+}
 body {
 	 background-image: url("<?php echo ((is_file('site/images/login.jpg'))?'site/images/login.jpg':RRCPHPBASE_LOGIN_IMAGE); ?>");
     background-repeat: no-repeat;
@@ -131,6 +141,9 @@ body {
 	  <p><?php echo $config['login']['subtitle']; ?></p>
       <input type="text" name="username" placeholder="usuario"/>
       <input type="password" name="password" placeholder="contraseña"/>
+	  <?php if (rrcphpbase_login_error()){
+		  echo "<p class='invalid'>".rrcphpbase_login_statusText()."</p>";
+	  } ?>
       <button>login</button>
       <p class="message">Inicio de sesión integrado con <strong><?php echo rrcphpbase_login_authText(); ?></strong></p>
 	  <p class="message"><?php echo RRCPHPBASE_COPYRIGHT; ?></p>
